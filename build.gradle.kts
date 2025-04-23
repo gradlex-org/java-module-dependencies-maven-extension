@@ -12,6 +12,8 @@ version = "0.1"
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
+    withSourcesJar()
+    withJavadocJar()
 }
 
 tasks.compileJava {
@@ -62,6 +64,16 @@ publishing {
     }
     repositories.maven(layout.buildDirectory.dir("test-repo")) {
         name = "testRepo"
+    }
+}
+
+signing {
+    if (providers.gradleProperty("sign").getOrElse("false").toBoolean()) {
+        useInMemoryPgpKeys(
+            providers.environmentVariable("SIGNING_KEY").getOrNull(),
+            providers.environmentVariable("SIGNING_PASSPHRASE").getOrNull()
+        )
+        sign(publishing.publications["maven"])
     }
 }
 
