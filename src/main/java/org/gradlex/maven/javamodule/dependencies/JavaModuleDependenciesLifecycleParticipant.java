@@ -21,6 +21,10 @@ import org.apache.maven.MavenExecutionException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.interpolation.Interpolator;
+import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
+import org.codehaus.plexus.interpolation.StringSearchInterpolator;
+import org.codehaus.plexus.interpolation.ValueSource;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -67,7 +71,8 @@ public class JavaModuleDependenciesLifecycleParticipant extends AbstractMavenLif
                     managedDependencies,
                     moduleInfoCache.getMainModuleNameToCoordinates(),
                     moduleInfoCache.getTestModuleNameToCoordinates(),
-                    localMappings);
+                    localMappings,
+                    interpolator(project));
         }
     }
 
@@ -85,6 +90,13 @@ public class JavaModuleDependenciesLifecycleParticipant extends AbstractMavenLif
             }
         }
         return localMappings;
+    }
+
+    private Interpolator interpolator(MavenProject project) {
+        StringSearchInterpolator interpolator = new StringSearchInterpolator();
+        ValueSource allProperties = new PropertiesBasedValueSource(project.getModel().getProperties());
+        interpolator.addValueSource(allProperties);
+        return interpolator;
     }
 
     @Override

@@ -39,7 +39,7 @@ Add this to one of your parent POMs:
     <extension>
       <groupId>org.gradlex</groupId>
       <artifactId>java-module-dependencies-maven-extension</artifactId>
-      <version>0.1</version>
+      <version>0.2</version>
     </extension>
   </extensions>
 </build>

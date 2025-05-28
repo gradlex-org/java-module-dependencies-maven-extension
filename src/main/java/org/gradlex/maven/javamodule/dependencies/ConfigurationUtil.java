@@ -19,6 +19,8 @@ package org.gradlex.maven.javamodule.dependencies;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.interpolation.InterpolationException;
+import org.codehaus.plexus.interpolation.Interpolator;
 import org.gradlex.maven.javamodule.dependencies.internal.utils.ModuleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,19 +33,19 @@ class ConfigurationUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationUtil.class);
 
-    static void addDependenciesForModuleInfo(String from, List<Dependency> dependencies, ModuleInfo mainModuleInfo, ModuleInfo testModuleInfo, List<Dependency> managed, Map<String, String> moduleNameToLocal, Map<String, String> localTestMappings, Map<String, String> localMappings) {
-        mainModuleInfo.get(ModuleInfo.Directive.REQUIRES).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "compile", d)); // should be "runtime" in consumer BOM
-        mainModuleInfo.get(ModuleInfo.Directive.REQUIRES_TRANSITIVE).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "compile", d));
-        mainModuleInfo.get(ModuleInfo.Directive.REQUIRES_STATIC).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "provided", d));
-        mainModuleInfo.get(ModuleInfo.Directive.REQUIRES_STATIC_TRANSITIVE).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "compile", d)); // should be "???" in consumer BOM
+    static void addDependenciesForModuleInfo(String from, List<Dependency> dependencies, ModuleInfo mainModuleInfo, ModuleInfo testModuleInfo, List<Dependency> managed, Map<String, String> moduleNameToLocal, Map<String, String> localTestMappings, Map<String, String> localMappings, Interpolator interpolator) {
+        mainModuleInfo.get(ModuleInfo.Directive.REQUIRES).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "compile", d, interpolator)); // should be "runtime" in consumer BOM
+        mainModuleInfo.get(ModuleInfo.Directive.REQUIRES_TRANSITIVE).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "compile", d, interpolator));
+        mainModuleInfo.get(ModuleInfo.Directive.REQUIRES_STATIC).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "provided", d, interpolator));
+        mainModuleInfo.get(ModuleInfo.Directive.REQUIRES_STATIC_TRANSITIVE).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "compile", d, interpolator)); // should be "???" in consumer BOM
 
-        testModuleInfo.get(ModuleInfo.Directive.REQUIRES).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "test", d));
-        testModuleInfo.get(ModuleInfo.Directive.REQUIRES_TRANSITIVE).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "test", d));
-        testModuleInfo.get(ModuleInfo.Directive.REQUIRES_STATIC).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "test", d));
-        testModuleInfo.get(ModuleInfo.Directive.REQUIRES_STATIC_TRANSITIVE).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "test", d));
+        testModuleInfo.get(ModuleInfo.Directive.REQUIRES).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "test", d, interpolator));
+        testModuleInfo.get(ModuleInfo.Directive.REQUIRES_TRANSITIVE).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "test", d, interpolator));
+        testModuleInfo.get(ModuleInfo.Directive.REQUIRES_STATIC).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "test", d, interpolator));
+        testModuleInfo.get(ModuleInfo.Directive.REQUIRES_STATIC_TRANSITIVE).forEach(d -> addDependency(from, dependencies, managed, moduleNameToLocal, localTestMappings, localMappings, "test", d, interpolator));
     }
 
-    private static void addDependency(String from, List<Dependency> dependencies, List<Dependency> managed, Map<String, String> moduleNameToLocal, Map<String, String> moduleNameToLocalTest, Map<String, String> localMappings, String scope, String moduleName) {
+    private static void addDependency(String from, List<Dependency> dependencies, List<Dependency> managed, Map<String, String> moduleNameToLocal, Map<String, String> moduleNameToLocalTest, Map<String, String> localMappings, String scope, String moduleName, Interpolator interpolator) {
         if (JDKInfo.MODULES.contains(moduleName)) {
             return;
         }
@@ -54,13 +56,13 @@ class ConfigurationUtil {
         }
         if (localModule != null) {
             String[] gav = localModule.split(":");
-            defineDependency(dependencies, scope, gav[0], gav[1], gav[2], false);
+            defineDependency(dependencies, scope, gav[0], gav[1], gav[2], null);
             return;
         }
         String localTestModule = moduleNameToLocalTest.get(moduleName);
         if (localTestModule != null) {
             String[] gav = localTestModule.split(":");
-            defineDependency(dependencies, scope, gav[0], gav[1], gav[2], true);
+            defineDependency(dependencies, scope, gav[0], gav[1], gav[2], "tests");
             return;
         }
 
@@ -74,23 +76,34 @@ class ConfigurationUtil {
         }
 
         String[] ga = externalModule.split(":");
+        String[] artifactAndClassifier = ga[1].split("\\|");
+        String group = ga[0];
+        String artifact = artifactAndClassifier[0];
+        String classifier;
+
+        try {
+            classifier = artifactAndClassifier.length > 1 ? interpolator.interpolate(artifactAndClassifier[1]) : null;
+        } catch (InterpolationException e) {
+            throw new RuntimeException(e);
+        }
+
         Optional<Dependency> version =
-                managed.stream().filter(v -> v.getGroupId().equals(ga[0]) && v.getArtifactId().equals(ga[1])).findFirst();
+                managed.stream().filter(v -> v.getGroupId().equals(group) && v.getArtifactId().equals(artifact)).findFirst();
         if (!version.isPresent()) {
             LOGGER.warn("Version missing: {}", externalModule);
             return;
         }
-        defineDependency(dependencies, scope, ga[0], ga[1], version.get().getVersion(), false);
+        defineDependency(dependencies, scope, group, artifact, version.get().getVersion(), classifier);
     }
 
-    private static void defineDependency(List<Dependency> dependencies, String scope, String group, String artifactId, String version, boolean testsClassifier) {
+    private static void defineDependency(List<Dependency> dependencies, String scope, String group, String artifactId, String version, String classifier) {
         Dependency dependency = new Dependency();
         dependency.setGroupId(group);
         dependency.setArtifactId(artifactId);
         dependency.setVersion(version);
         dependency.setScope(scope);
-        if (testsClassifier) {
-            dependency.setClassifier("tests");
+        if (classifier != null) {
+            dependency.setClassifier(classifier);
         }
         dependencies.add(dependency);
     }
