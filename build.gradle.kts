@@ -1,5 +1,5 @@
 plugins {
-    id("com.gradleup.nmcp") version "0.0.9"
+    id("com.gradleup.nmcp") version "0.1.5"
     id("java-library")
     id("maven-publish")
     id("signing")
@@ -78,10 +78,10 @@ signing {
 }
 
 nmcp {
-    publish("maven") {
+    centralPortal {
         username = providers.environmentVariable("MAVEN_CENTRAL_USERNAME")
         password = providers.environmentVariable("MAVEN_CENTRAL_PASSWORD")
-        publicationType = "AUTOMATIC" // "USER_MANAGED"
+        publishingType = "AUTOMATIC" // "USER_MANAGED"
     }
 }
 
