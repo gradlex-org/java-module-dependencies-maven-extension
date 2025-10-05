@@ -1,5 +1,8 @@
 plugins {
-    id("com.gradleup.nmcp") version "0.1.5"
+    val nmcpVersion = "1.2.0"
+
+    id("com.gradleup.nmcp") version nmcpVersion
+    id("com.gradleup.nmcp.aggregation") version nmcpVersion
     id("java-library")
     id("maven-publish")
     id("signing")
@@ -31,6 +34,8 @@ tasks.withType<Javadoc>().configureEach {
 
 dependencies {
     compileOnly("org.apache.maven:maven-core:3.9.11")
+
+    nmcpAggregation(project(path))
 
     testImplementation("org.assertj:assertj-core:3.27.6")
     testImplementation("io.takari.maven.plugins:takari-plugin-integration-testing:3.1.1")
@@ -77,7 +82,8 @@ signing {
     }
 }
 
-nmcp {
+
+nmcpAggregation {
     centralPortal {
         username = providers.environmentVariable("MAVEN_CENTRAL_USERNAME")
         password = providers.environmentVariable("MAVEN_CENTRAL_PASSWORD")
