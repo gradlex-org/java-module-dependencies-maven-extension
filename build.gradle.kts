@@ -30,7 +30,7 @@ tasks.withType<Javadoc>().configureEach {
 }
 
 dependencies {
-    compileOnly("org.apache.maven:maven-core:3.9.9")
+    compileOnly("org.apache.maven:maven-core:3.9.11")
 
     testImplementation("org.assertj:assertj-core:3.27.3")
     testImplementation("io.takari.maven.plugins:takari-plugin-integration-testing:3.0.5")
