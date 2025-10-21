@@ -88,7 +88,8 @@ detachedResolver.repositories.ivy {
 val modulePropertiesScope = detachedResolver.configurations.dependencyScope("moduleProperties")
 val modulePropertiesPath =
     detachedResolver.configurations.resolvable("modulePropertiesPath") { extendsFrom(modulePropertiesScope.get()) }
-val dep = detachedResolver.dependencies.add(modulePropertiesScope.name, "com.github.sormuras.modules:modules:1@properties")
+val dep =
+    detachedResolver.dependencies.add(modulePropertiesScope.name, "com.github.sormuras.modules:modules:1@properties")
 
 (dep as ExternalModuleDependency).isChanging = true
 
