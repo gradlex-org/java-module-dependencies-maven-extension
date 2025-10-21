@@ -11,9 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - name: git clone gradlex-build-conventions
+        uses: actions/checkout@v5
+        with:
+          repository: gradlex-org/plugin-publish-conventions
+          path: build/plugin-publish-conventions
+          ref: new-convention-plugins
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v5
-      - run: "./gradlew build"
+      - run: "./gradlew build -Psigning.disable"
