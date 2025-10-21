@@ -5,8 +5,54 @@ import org.gradle.util.internal.VersionNumber
 version = "0.2"
 
 dependencies {
-    compileOnly("org.apache.maven:maven-core:3.9.11")
-    testImplementation("io.takari.maven.plugins:takari-plugin-integration-testing:3.1.1")
+    compileOnly("org.apache.maven:maven-core:3.9.11") {
+        exclude(group = "com.google.guava", module = "failureaccess")
+        exclude(group = "com.google.guava", module = "guava")
+        exclude(group = "com.google.inject", module = "guice")
+        exclude(group = "javax.inject", module = "javax.inject")
+        exclude(group = "org.apache.maven.resolver", module = "maven-resolver-api")
+        exclude(group = "org.apache.maven.resolver", module = "maven-resolver-impl")
+        exclude(group = "org.apache.maven.resolver", module = "maven-resolver-spi")
+        exclude(group = "org.apache.maven.resolver", module = "maven-resolver-util")
+        exclude(group = "org.apache.maven.shared", module = "maven-shared-utils")
+        exclude(group = "org.apache.maven", module = "maven-artifact")
+        exclude(group = "org.apache.maven", module = "maven-builder-support")
+        exclude(group = "org.apache.maven", module = "maven-model-builder")
+        exclude(group = "org.apache.maven", module = "maven-plugin-api")
+        exclude(group = "org.apache.maven", module = "maven-repository-metadata")
+        exclude(group = "org.apache.maven", module = "maven-resolver-provider")
+        exclude(group = "org.apache.maven", module = "maven-settings-builder")
+        exclude(group = "org.apache.maven", module = "maven-settings")
+        exclude(group = "org.codehaus.plexus", module = "plexus-component-annotations")
+        exclude(group = "org.eclipse.sisu", module = "org.eclipse.sisu.inject")
+        exclude(group = "org.eclipse.sisu", module = "org.eclipse.sisu.plexus")
+        exclude(group = "org.slf4j", module = "slf4j-api")
+    }
+    testImplementation("io.takari.maven.plugins:takari-plugin-integration-testing:3.1.1") {
+        exclude(group = "com.google.guava", module = "failureaccess")
+        exclude(group = "com.google.guava", module = "guava")
+        exclude(group = "com.google.inject", module = "guice")
+        exclude(group = "javax.inject", module = "javax.inject")
+        exclude(group = "org.apache.maven.resolver", module = "maven-resolver-api")
+        exclude(group = "org.apache.maven.resolver", module = "maven-resolver-impl")
+        exclude(group = "org.apache.maven.resolver", module = "maven-resolver-spi")
+        exclude(group = "org.apache.maven.resolver", module = "maven-resolver-util")
+        exclude(group = "org.apache.maven.shared", module = "maven-shared-utils")
+        exclude(group = "org.apache.maven", module = "maven-artifact")
+        exclude(group = "org.apache.maven", module = "maven-builder-support")
+        exclude(group = "org.apache.maven", module = "maven-model-builder")
+        exclude(group = "org.apache.maven", module = "maven-plugin-api")
+        exclude(group = "org.apache.maven", module = "maven-repository-metadata")
+        exclude(group = "org.apache.maven", module = "maven-resolver-provider")
+        exclude(group = "org.apache.maven", module = "maven-settings-builder")
+        exclude(group = "org.apache.maven", module = "maven-settings")
+        exclude(group = "org.codehaus.plexus", module = "plexus-component-annotations")
+        exclude(group = "org.eclipse.sisu", module = "org.eclipse.sisu.inject")
+        exclude(group = "org.eclipse.sisu", module = "org.eclipse.sisu.plexus")
+        exclude(group = "org.slf4j", module = "slf4j-api")
+        exclude(group = "org.slf4j", module = "slf4j-simple")
+        exclude(group = "io.takari.m2e.workspace", module = "org.eclipse.m2e.workspace.cli")
+    }
 }
 
 publishingConventions {
@@ -42,7 +88,7 @@ detachedResolver.repositories.ivy {
 val modulePropertiesScope = detachedResolver.configurations.dependencyScope("moduleProperties")
 val modulePropertiesPath =
     detachedResolver.configurations.resolvable("modulePropertiesPath") { extendsFrom(modulePropertiesScope.get()) }
-val dep = detachedResolver.dependencies.add(modulePropertiesScope.name, "com.github.sormuras.modules:modules:1")
+val dep = detachedResolver.dependencies.add(modulePropertiesScope.name, "com.github.sormuras.modules:modules:1@properties")
 
 (dep as ExternalModuleDependency).isChanging = true
 
