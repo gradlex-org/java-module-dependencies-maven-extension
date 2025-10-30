@@ -5,55 +5,43 @@ import org.gradle.util.internal.VersionNumber
 version = "0.2"
 
 dependencies {
-    compileOnly("org.apache.maven:maven-core:3.9.11") {
-        exclude("com.google.guava", "failureaccess")
-        exclude("com.google.guava", "guava")
-        exclude("com.google.inject", "guice")
-        exclude("javax.inject", "javax.inject")
-        exclude("org.apache.maven", "maven-artifact")
-        exclude("org.apache.maven", "maven-builder-support")
-        exclude("org.apache.maven", "maven-model-builder")
-        exclude("org.apache.maven", "maven-plugin-api")
-        exclude("org.apache.maven", "maven-repository-metadata")
-        exclude("org.apache.maven", "maven-resolver-provider")
-        exclude("org.apache.maven", "maven-settings")
-        exclude("org.apache.maven", "maven-settings-builder")
-        exclude("org.apache.maven.resolver", "maven-resolver-api")
-        exclude("org.apache.maven.resolver", "maven-resolver-impl")
-        exclude("org.apache.maven.resolver", "maven-resolver-spi")
-        exclude("org.apache.maven.resolver", "maven-resolver-util")
-        exclude("org.apache.maven.shared", "maven-shared-utils")
-        exclude("org.codehaus.plexus", "plexus-component-annotations")
-        exclude("org.eclipse.sisu", "org.eclipse.sisu.inject")
-        exclude("org.eclipse.sisu", "org.eclipse.sisu.plexus")
-        exclude("org.slf4j", "slf4j-api")
-    }
-    testImplementation("io.takari.maven.plugins:takari-plugin-integration-testing:3.1.1") {
-        exclude("com.google.guava", "failureaccess")
-        exclude("com.google.guava", "guava")
-        exclude("com.google.inject", "guice")
-        exclude("io.takari.m2e.workspace", "org.eclipse.m2e.workspace.cli")
-        exclude("javax.inject", "javax.inject")
-        exclude("org.apache.commons", "commons-compress")
-        exclude("org.apache.maven", "maven-artifact")
-        exclude("org.apache.maven", "maven-builder-support")
-        exclude("org.apache.maven", "maven-model-builder")
-        exclude("org.apache.maven", "maven-plugin-api")
-        exclude("org.apache.maven", "maven-repository-metadata")
-        exclude("org.apache.maven", "maven-resolver-provider")
-        exclude("org.apache.maven", "maven-settings")
-        exclude("org.apache.maven", "maven-settings-builder")
-        exclude("org.apache.maven.resolver", "maven-resolver-api")
-        exclude("org.apache.maven.resolver", "maven-resolver-impl")
-        exclude("org.apache.maven.resolver", "maven-resolver-spi")
-        exclude("org.apache.maven.resolver", "maven-resolver-util")
-        exclude("org.apache.maven.shared", "maven-shared-utils")
-        exclude("org.codehaus.plexus", "plexus-component-annotations")
-        exclude("org.eclipse.sisu", "org.eclipse.sisu.inject")
-        exclude("org.eclipse.sisu", "org.eclipse.sisu.plexus")
-        exclude("org.slf4j", "slf4j-api")
-        exclude("org.slf4j", "slf4j-simple")
-    }
+    compileOnly("org.apache.maven:maven-core:3.9.11")
+    testImplementation("io.takari.maven.plugins:takari-plugin-integration-testing:3.1.1")
+}
+
+jvmDependencyConflicts.patch {
+    listOf(
+            "org.apache.maven:maven-core",
+            "io.takari.maven.plugins:takari-plugin-testing",
+            "io.takari.maven.plugins:takari-plugin-integration-testing",
+        )
+        .forEach {
+            module(it) {
+                removeDependency("com.google.guava:failureaccess")
+                removeDependency("com.google.guava:guava")
+                removeDependency("com.google.inject:guice")
+                removeDependency("io.takari.m2e.workspace:org.eclipse.m2e.workspace.cli")
+                removeDependency("javax.inject:javax.inject")
+                removeDependency("org.apache.maven.resolver:maven-resolver-api")
+                removeDependency("org.apache.maven.resolver:maven-resolver-impl")
+                removeDependency("org.apache.maven.resolver:maven-resolver-spi")
+                removeDependency("org.apache.maven.resolver:maven-resolver-util")
+                removeDependency("org.apache.maven.shared:maven-shared-utils")
+                removeDependency("org.apache.maven:maven-artifact")
+                removeDependency("org.apache.maven:maven-builder-support")
+                removeDependency("org.apache.maven:maven-model-builder")
+                removeDependency("org.apache.maven:maven-plugin-api")
+                removeDependency("org.apache.maven:maven-repository-metadata")
+                removeDependency("org.apache.maven:maven-resolver-provider")
+                removeDependency("org.apache.maven:maven-settings")
+                removeDependency("org.apache.maven:maven-settings-builder")
+                removeDependency("org.codehaus.plexus:plexus-component-annotations")
+                removeDependency("org.eclipse.sisu:org.eclipse.sisu.inject")
+                removeDependency("org.eclipse.sisu:org.eclipse.sisu.plexus")
+                removeDependency("org.slf4j:slf4j-api")
+                removeDependency("org.slf4j:slf4j-simple")
+            }
+        }
 }
 
 publishingConventions {
