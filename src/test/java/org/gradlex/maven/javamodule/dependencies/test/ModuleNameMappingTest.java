@@ -1,25 +1,10 @@
-/*
- * Copyright the GradleX team.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+// SPDX-License-Identifier: Apache-2.0
 package org.gradlex.maven.javamodule.dependencies.test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.gradlex.maven.javamodule.dependencies.test.fixture.MavenBuild;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class ModuleNameMappingTest {
 
@@ -28,7 +13,8 @@ class ModuleNameMappingTest {
     @Test
     void can_require_other_local_module() {
         build.libModuleInfoFile.writeText("module org.example.lib { }");
-        build.appModuleInfoFile.writeText("""
+        build.appModuleInfoFile.writeText(
+                """
             module org.example.app {
                 requires org.example.lib;
             }""");
@@ -36,17 +22,17 @@ class ModuleNameMappingTest {
         build.verify();
 
         var result = build.dependencyTree();
-        assertThat(result.getLog()).contains(
-                "[INFO] org.example:app:jar:1.0",
-                "[INFO] \\- org.example:lib:jar:1.0:compile"
-        );
+        assertThat(result.getLog())
+                .contains("[INFO] org.example:app:jar:1.0", "[INFO] \\- org.example:lib:jar:1.0:compile");
     }
 
     @Test
     void can_add_custom_mapping_via_properties_file_in_default_location() {
         var modulesPropertiesFile = build.file(".mvn/modules.properties");
         modulesPropertiesFile.writeText("jakarta.mail=com.sun.mail:jakarta.mail");
-        build.rootPom.replaceText("</project>", """
+        build.rootPom.replaceText(
+                "</project>",
+                """
                 <dependencyManagement>
                     <dependencies>
                         <dependency>
@@ -59,7 +45,8 @@ class ModuleNameMappingTest {
             </project>
             """);
 
-        build.appModuleInfoFile.writeText("""
+        build.appModuleInfoFile.writeText(
+                """
             module org.example.app {
                 requires jakarta.mail;
             }""");
@@ -67,21 +54,22 @@ class ModuleNameMappingTest {
         build.verify();
 
         var result = build.dependencyTree();
-        assertThat(result.getLog()).contains(
-                "[INFO] org.example:app:jar:1.0",
-                "[INFO] \\- com.sun.mail:jakarta.mail:jar:2.0.1:compile",
-                "[INFO]    \\- com.sun.activation:jakarta.activation:jar:2.0.1:compile"
-        );
+        assertThat(result.getLog())
+                .contains(
+                        "[INFO] org.example:app:jar:1.0",
+                        "[INFO] \\- com.sun.mail:jakarta.mail:jar:2.0.1:compile",
+                        "[INFO]    \\- com.sun.activation:jakarta.activation:jar:2.0.1:compile");
 
         result = build.exec();
-        assertThat(result.getLog()).contains(
-                "Module Path: classes,jakarta.mail-2.0.1.jar,jakarta.activation-2.0.1.jar"
-        );
+        assertThat(result.getLog())
+                .contains("Module Path: classes,jakarta.mail-2.0.1.jar,jakarta.activation-2.0.1.jar");
     }
 
     @Test
     void versions_can_be_imported() {
-        build.rootPom.replaceText("</project>", """
+        build.rootPom.replaceText(
+                "</project>",
+                """
                 <dependencyManagement>
                     <dependencies>
                         <dependency>
@@ -95,7 +83,8 @@ class ModuleNameMappingTest {
                 </dependencyManagement>
             </project>
             """);
-        build.appModuleInfoFile.writeText("""
+        build.appModuleInfoFile.writeText(
+                """
             module org.example.app {
                 requires org.slf4j;
             }""");
@@ -103,28 +92,24 @@ class ModuleNameMappingTest {
         build.verify();
 
         var result = build.dependencyTree();
-        assertThat(result.getLog()).contains(
-                "[INFO] org.example:app:jar:1.0",
-                "[INFO] \\- org.slf4j:slf4j-api:jar:1.7.30:compile"
-        );
+        assertThat(result.getLog())
+                .contains("[INFO] org.example:app:jar:1.0", "[INFO] \\- org.slf4j:slf4j-api:jar:1.7.30:compile");
 
         result = build.exec();
-        assertThat(result.getLog()).contains(
-                "Module Path: classes,slf4j-api-1.7.30.jar"
-        );
+        assertThat(result.getLog()).contains("Module Path: classes,slf4j-api-1.7.30.jar");
     }
 
     @Test
     void ignores_jdk_modules() {
-        build.appModuleInfoFile.writeText("""
+        build.appModuleInfoFile.writeText(
+                """
             module org.example.app {
                 requires java.desktop;
             }""");
 
         var result = build.verify();
 
-        assertThat(result.getLog()).doesNotContain(
-                "[WARNING] Mapping missing in '.mvn/modules.properties': java.desktop"
-        );
+        assertThat(result.getLog())
+                .doesNotContain("[WARNING] Mapping missing in '.mvn/modules.properties': java.desktop");
     }
 }
