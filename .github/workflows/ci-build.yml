@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ main ]
 env:
-  MAVEN_HOME: "/usr/share/apache-maven-3.9.11"
+  MAVEN_HOME: "/usr/share/apache-maven-3.9.12"
 jobs:
   gradle-build:
     runs-on: ubuntu-latest
