@@ -12,16 +12,13 @@ class WarningsTest {
 
     @Test
     void prints_warning_for_missing_mapping() {
-        build.appModuleInfoFile.writeText(
-                """
+        build.appModuleInfoFile.writeText("""
             module org.my.app {
                 requires commons.math3;
             }""");
 
         // Manually add dependency so that build does not fail
-        build.appPomFile.replaceText(
-                "</project>",
-                """
+        build.appPomFile.replaceText("</project>", """
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.commons</groupId>

@@ -13,8 +13,7 @@ class ModuleNameMappingTest {
     @Test
     void can_require_other_local_module() {
         build.libModuleInfoFile.writeText("module org.example.lib { }");
-        build.appModuleInfoFile.writeText(
-                """
+        build.appModuleInfoFile.writeText("""
             module org.example.app {
                 requires org.example.lib;
             }""");
@@ -30,9 +29,7 @@ class ModuleNameMappingTest {
     void can_add_custom_mapping_via_properties_file_in_default_location() {
         var modulesPropertiesFile = build.file(".mvn/modules.properties");
         modulesPropertiesFile.writeText("jakarta.mail=com.sun.mail:jakarta.mail");
-        build.rootPom.replaceText(
-                "</project>",
-                """
+        build.rootPom.replaceText("</project>", """
                 <dependencyManagement>
                     <dependencies>
                         <dependency>
@@ -45,8 +42,7 @@ class ModuleNameMappingTest {
             </project>
             """);
 
-        build.appModuleInfoFile.writeText(
-                """
+        build.appModuleInfoFile.writeText("""
             module org.example.app {
                 requires jakarta.mail;
             }""");
@@ -67,9 +63,7 @@ class ModuleNameMappingTest {
 
     @Test
     void versions_can_be_imported() {
-        build.rootPom.replaceText(
-                "</project>",
-                """
+        build.rootPom.replaceText("</project>", """
                 <dependencyManagement>
                     <dependencies>
                         <dependency>
@@ -83,8 +77,7 @@ class ModuleNameMappingTest {
                 </dependencyManagement>
             </project>
             """);
-        build.appModuleInfoFile.writeText(
-                """
+        build.appModuleInfoFile.writeText("""
             module org.example.app {
                 requires org.slf4j;
             }""");
@@ -101,8 +94,7 @@ class ModuleNameMappingTest {
 
     @Test
     void ignores_jdk_modules() {
-        build.appModuleInfoFile.writeText(
-                """
+        build.appModuleInfoFile.writeText("""
             module org.example.app {
                 requires java.desktop;
             }""");

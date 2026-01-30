@@ -31,8 +31,7 @@ public class MavenBuild {
 
         var appClass = new WritableFile(projectDir.dir("app/src/main/java"), "org/example/app/App.java");
 
-        appClass.writeText(
-                """
+        appClass.writeText("""
                 package org.example.app;
                 import java.io.File;
                 import java.util.Arrays;
@@ -46,8 +45,7 @@ public class MavenBuild {
                 }
                 """);
 
-        rootPom.writeText(
-                """
+        rootPom.writeText("""
             <project>
                 <modelVersion>4.0.0</modelVersion>
                 <artifactId>test-project</artifactId>
@@ -81,8 +79,7 @@ public class MavenBuild {
                 </build>
             </project>""");
 
-        appPomFile.writeText(
-                """
+        appPomFile.writeText("""
             <project>
                 <modelVersion>4.0.0</modelVersion>
                 <parent>
@@ -112,8 +109,7 @@ public class MavenBuild {
                         </pluginManagement>
                     </build>
             </project>""");
-        libPomFile.writeText(
-                """
+        libPomFile.writeText("""
             <project>
                 <modelVersion>4.0.0</modelVersion>
                 <parent>
