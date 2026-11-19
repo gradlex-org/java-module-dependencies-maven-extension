@@ -5,11 +5,12 @@ on:
   pull_request:
     branches: [ main ]
 env:
-  MAVEN_HOME: "/usr/share/apache-maven-3.9.16"
+  MAVEN_HOME: "/usr/share/apache-maven-3.9.15"
 jobs:
   gradle-build:
     runs-on: ubuntu-latest
     steps:
+      - run: ls /usr/share | grep apache-maven
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
         with:
