@@ -2,6 +2,7 @@
 
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fgradlex-org%2Fjava-module-dependencies-maven-extension%2Fbadge%3Fref%3Dmain&style=flat)](https://actions-badge.atrox.dev/gradlex-org/java-module-dependencies-maven-extension/goto?ref=main)
 [![Maven Central](https://img.shields.io/maven-metadata/v?label=Maven%20Central&metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Forg%2Fgradlex%2Fjava-module-dependencies-maven-extension%2Fmaven-metadata.xml)](https://repo1.maven.org/maven2/org/gradlex/java-module-dependencies-maven-extension)
+[![Revved up by Develocity](https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A)](https://community.develocity.cloud/scans?search.names=Git%20repository&search.values=*gradlex-org%2F*)
 
 A [Maven Extension](https://maven.apache.org/guides/mini/guide-using-extensions.html) to make Maven use dependencies from _module-info.java_ files automatically.
 If you have a project that fully uses Java Modules, you do **not** need to declare dependencies in the `<dependencies>` section anymore.
