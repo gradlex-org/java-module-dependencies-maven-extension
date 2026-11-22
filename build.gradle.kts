@@ -5,7 +5,7 @@ import org.gradle.util.internal.VersionNumber
 version = "0.2"
 
 dependencies {
-    compileOnly("org.apache.maven:maven-core:3.10.1")
+    compileOnly("org.apache.maven:maven-core:3.10.2")
     testImplementation("io.takari.maven.plugins:takari-plugin-integration-testing:3.1.1")
 }
 
